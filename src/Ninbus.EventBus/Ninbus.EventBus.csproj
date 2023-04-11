@@ -7,7 +7,7 @@
 		<GeneratePackageOnBuild>False</GeneratePackageOnBuild>
 		<Title>Simple event bus implementation for RabbitMQ</Title>
 		<Description>Simple event bus for RabbitMQ</Description>
-		<Version>1.1.0</Version>
+		<Version>2.0.0</Version>
 		<Authors>Samuel Paiva</Authors>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<RepositoryUrl>https://github.com/sam-paiva/ninbus</RepositoryUrl>

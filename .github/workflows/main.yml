@@ -2,8 +2,6 @@ name: Publish Ninbubs Event bus package
 
 on:
   push:
-    tags:
-      - '*'
     branches: ['master']
   pull_request:
     branches: ['master']

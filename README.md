@@ -1,20 +1,19 @@
-
 # Ninbus
 
 Ninbus is an event bus implementation using .NET and RabbitMQ
 
-
 ## How to use
 
-After installing the package via Nuget, 
+After installing the package via Nuget,
 you need to inject the library by dependency injection.
 
-In the following examples, the .NET template **Worker Service** is being used. 
+In the following examples, the .NET template **Worker Service** is being used.
 See the example below:
 
 ### Publisher
 
 #### TestEvent.cs
+
 ```c#
 using Ninbus.EventBus;
 
@@ -29,6 +28,7 @@ namespace Ninbus.Publisher
 ```
 
 #### Program.cs
+
 ```c#
 using Ninbus.EventBus;
 using Ninbus.EventBus.IoC;
@@ -56,8 +56,8 @@ IHost host = Host.CreateDefaultBuilder(args)
 await host.RunAsync();
 ```
 
-
 #### Worker.cs
+
 ```c#
 using Ninbus.EventBus;
 
@@ -93,11 +93,10 @@ namespace Ninbus.Publisher
 
 ### Consumer
 
-
-
 For consumers, basically you need to do the same things as for publisher, with just a few differences. See the example below:
 
 #### Program.cs
+
 ```c#
 using Ninbus.EventBus;
 using Ninbus.EventBus.IoC;
@@ -128,7 +127,6 @@ await host.RunAsync();
 
 #### TestEvent.cs
 
-
 Remember to always use the same class name as the publisher event. The properties must be the same and the setter must always be public. The success of event deserialization depends on these factors.
 
 ```c#
@@ -144,7 +142,9 @@ namespace Ninbus.Subscriber
 ```
 
 #### TestEventHandler.cs
+
 The event handler must inherit from the **IIntegrationEventHandler.cs** interface, which use the generic type **IntegrationEvent.cs**. See below:
+
 ```c#
 using Ninbus.EventBus;
 
@@ -154,15 +154,20 @@ namespace Ninbus.Subscriber
     {
         public Task<Result> Handle(TestEvent request, CancellationToken cancellationToken)
         {
-            //do your logic
-            return Task.FromResult(Result.Success());
+            try
+            {
+                return Task.FromResult(Result.Success());
+            }
+            catch (Exception ex)
+            {
+                return Task.FromResult(Result.Error(ex));
+            }
         }
     }
 }
 ```
 
 #### Worker.cs
-
 
 The Consumer just need to call the **Subscribe** method passing the event as a generic type. After subscribing all events, the **StartListeningAsync** method must be called.
 
@@ -210,24 +215,30 @@ You can also configure retry policies in case there is any failure in handling t
 The **OnFailure** method receives a configuration of how the exceptions that occur will be treated. See below:
 
 ### RetryForTimes
+
 Attempt to process the event 5 times before discarding the event and posting it to the dead-letter queue
+
 ```c#
   var scope = _scopeFactory.CreateScope();
   var eventSubscriber = scope.ServiceProvider.GetService<IEventSubscriber>()!;
-  eventSubscriber.Subscribe<TestEvent>().OnFailure(c => c.RetryForTimes(5)); 
+  eventSubscriber.Subscribe<TestEvent>().OnFailure(c => c.RetryForTimes(5));
 ```
 
 ### SetIntervalTime
+
 Attempt to process the event 5 times before discarding the event and posting it to the dead-letter queue, and waiting 5 seconds before retrying to process the event
+
 ```c#
   var scope = _scopeFactory.CreateScope();
   var eventSubscriber = scope.ServiceProvider.GetService<IEventSubscriber>()!;
-  eventSubscriber.Subscribe<TestEvent>().OnFailure(c => 
+  eventSubscriber.Subscribe<TestEvent>().OnFailure(c =>
     c.RetryForTimes(5).SetIntervalTime(TimeSpan.FromSeconds(5)));
 ```
 
 ### RetryForever
+
 It will process the event forever even in case of failures
+
 ```c#
   var scope = _scopeFactory.CreateScope();
   var eventSubscriber = scope.ServiceProvider.GetService<IEventSubscriber>()!;
@@ -235,7 +246,9 @@ It will process the event forever even in case of failures
 ```
 
 ### NeverRetry
+
 Discard the event and publish it to the dead-letter queue on failure
+
 ```c#
   var scope = _scopeFactory.CreateScope();
   var eventSubscriber = scope.ServiceProvider.GetService<IEventSubscriber>()!;
@@ -243,10 +256,11 @@ Discard the event and publish it to the dead-letter queue on failure
 ```
 
 ### ShouldDiscard
+
 Discard the event and post it to the dead-letter queue if the expected exception occurs
+
 ```c#
   var scope = _scopeFactory.CreateScope();
   var eventSubscriber = scope.ServiceProvider.GetService<IEventSubscriber>()!;
   eventSubscriber.Subscribe<TestEvent>().OnFailure(c => c.ShouldDiscard<CustomException>());
 ```
-

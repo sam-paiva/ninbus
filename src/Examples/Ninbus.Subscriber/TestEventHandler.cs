@@ -6,8 +6,14 @@ namespace Ninbus.Subscriber
     {
         public Task<Result> Handle(TestEvent request, CancellationToken cancellationToken)
         {
-            //do your logic
-            return Task.FromResult(Result.Success());
+            try
+            {
+                return Task.FromResult(Result.Success());
+            }
+            catch (Exception ex)
+            {
+                return Task.FromResult(Result.Error(ex));
+            }
         }
     }
 }

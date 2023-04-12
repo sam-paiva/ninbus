@@ -4,7 +4,7 @@ Ninbus is an event bus implementation using .NET and RabbitMQ
 
 ## How to use
 
-After installing the package via Nuget,
+After installing the package **Ninbus.EventBus** via Nuget,
 you need to inject the library by dependency injection.
 
 In the following examples, the .NET template **Worker Service** is being used.
